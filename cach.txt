@@ -1,0 +1,50 @@
+<%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
+<%@ taglib prefix="s" uri="/struts-tags"%>
+<%
+String path = request.getContextPath();
+String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+path+"/";
+%>
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+    <base href="<%=basePath%>">
+    
+    <title></title>
+    
+	<meta http-equiv="pragma" content="no-cache">
+	<meta http-equiv="cache-control" content="no-cache">
+	<meta http-equiv="expires" content="0">    
+	<meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+	<meta http-equiv="description" content="This is my page">
+	<!--
+	<link rel="stylesheet" type="text/css" href="styles.css">
+	-->
+
+  </head>
+<body>
+<a href="Login.jsp">返回登录</a>
+<a href="Custom.jsp">自定义网络</a>
+<form action="anticipateAction.action" method="post">
+<label>参数1：</label><input type="text" name="param1" />
+<label>参数1：</label><input type="text" name="param2" />
+<label>参数1：</label><input type="text" name="param3" />
+<label>参数1：</label><input type="text" name="param4" />
+<input type="submit" />
+</form>
+   <label>当前预测网络参数</label><br/>
+   <label>网络结构：4-</label><s:property value="param0"/><label>-2</label><br/>
+   <label>网络训练参数</label><br/>
+   <label>网络最大训练次数：</label><s:property value="param1" /><br/>
+   <label>学习率：</label><s:property value="param2" /><br/>
+   <label>动量项：</label><s:property value="param3" /><br/>
+   <label>训练精度要求：</label><s:property value="param4" /><br/>
+   <label>测试误差要求：</label><s:property value="param5" /><br/>
+   <label>使用批量学习：</label><s:property value="param6" /><br/>
+   <label>网络性能</label><br/>
+   <label>训练精度:</label><s:property value="param7" /><br/>
+   <label>训练误差:</label><s:property value="param8" /><br/>
+   <label>测试精度:</label><s:property value="param9" /><br/>
+   <label>测试误差:</label><s:property value="param10" /><br/>
+</body>
+</html>

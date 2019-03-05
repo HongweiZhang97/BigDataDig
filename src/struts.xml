@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+    "http://struts.apache.org/dtds/struts-2.3.dtd">
+<!-- 上面的头，注意版本，从样例里复制过来 showcase.war\WEB-INF\src\java\struts.xml -->
+    
+<struts>
+    
+    
+    
+     <!-- 告知Struts2运行时使用Spring来创建对象 -->
+    <constant name="struts.objectFactory" value="spring"></constant>
+    <!-- 第1步：先定义一个包 -->
+    <package name="ssh2" extends="struts-default">
+        <!-- 第2步：定义一个action，配置跳转信息 name 类似于Servlet  注：这里使用了通配符来指定调用的方法-->
+      <action name="loginAction" class="userLoginAction">
+        <result name="success">/MainPage.jsp</result>
+        <result name="error">/LoginError.jsp</result>
+        <result name="input">/Login.jsp</result>
+      </action>  
+      <action name="registerAction" class="userRegisterAction">
+        <result name="success">/RegisterSuccess.jsp</result>
+        <result name="error">/RegisterError.jsp</result>
+        <result name="input">/Register.jsp</result>
+      </action>  
+      <action name="anticipateAction" class="anticipateAction">
+        <result name="type1">/Type1.jsp</result>
+        <result name="type2">/Type2.jsp</result>
+        <result name="type3">/Type3.jsp</result>
+        <result name="error">/AntiError.jsp</result>
+      </action>  
+      <action name="customAction" class="customAction">
+        <result name="success">/TrainSuccess.jsp</result>
+        <result name="input">/TrainFail.jsp</result>
+      </action>  
+      <action name="backMainPageAction" class="backMainPageAction">
+        <result name="success">/MainPage.jsp</result>
+        <result name="input">/SystemError.jsp</result>
+      </action>  
+    </package>
+    <package name="Security" namespace="/Security" extends="struts-default">
+	    <action name="SecurityCodeImageAction" 
+	    class="securityCodeAction">
+	        <result name="success" type="stream">
+	            <param name="contentType">image/jpeg</param>
+	            <param name="inputName">imageStream</param>
+	            <param name="bufferSize">2048</param>
+	        </result>
+	    </action>
+	</package>
+</struts>

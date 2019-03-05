@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+    xmlns:aop="http://www.springframework.org/schema/aop" xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:jee="http://www.springframework.org/schema/jee" xmlns:tx="http://www.springframework.org/schema/tx"
+    xsi:schemaLocation="    
+            http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.2.xsd  
+            http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd  
+            http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd
+            http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-4.2.xsd  
+            http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.2.xsd">
+
+    
+    <!-- 引入外部属性文件 -->
+    <context:property-placeholder location="classpath:jdbc.properties" />
+    <!-- 添加sessionFactory bane ，注意，该类是Spring提供的 -->
+    <bean id="sessionFactory"
+        class="org.springframework.orm.hibernate5.LocalSessionFactoryBean" scope="prototype">
+        <!-- 注入连接池，包含了数据库用户名，密码等等信息 -->
+        <property name="dataSource" ref="myDataSource" />
+        <!-- 配置Hibernate的其他的属性 -->
+        <property name="hibernateProperties">
+            <props>
+                <prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
+                <prop key="hibernate.show_sql">false</prop>
+                <prop key="hibernate.format_sql">true</prop>
+                <prop key="hibernate.connection.autocommit">false</prop>
+                <!-- 自动生成表，create的话每次启动会删掉表，重新生成 -->
+                <prop key="hibernate.hbm2ddl.auto">update</prop>
+                <prop key="hibernate.temp.use_jdbc_metadata_defaults">false</prop>
+            </props>
+        </property>
+        
+		<!-- 配置Hibernate的映射文件 -->
+		<property name="mappingResources">
+			<list>
+				<value>entity/User.hbm.xml</value>
+			</list>
+		</property>
+    </bean>
+    
+    <!-- 添加c3p0数据库连接池 bean -->
+    <bean id="myDataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+        <!-- 数据库连接配置 -->
+        <property name="driverClass" value="${jdbc.driver}" />
+        <property name="jdbcUrl" value="${jdbc.url}" />
+        <property name="user" value="${jdbc.user}" />
+        <property name="password" value="${jdbc.password}" />
+        <!-- 每300秒检查所有连接池中的空闲连接 -->
+        <property name="idleConnectionTestPeriod" value="300"></property>
+        <!-- 最大空闲时间,900秒内未使用则连接被丢弃。若为0则永不丢弃 -->
+        <property name="maxIdleTime" value="900"></property>
+        <!-- 最大连接数 -->
+        <property name="maxPoolSize" value="2"></property>
+    </bean>
+    
+        <!-- 在Dao中使用hibernateTemplate -->
+	<bean id="hibernateTemplate" class="org.springframework.orm.hibernate5.HibernateTemplate">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+	
+	<bean id="userDAO" class="dao.UserDAO" scope="prototype">
+		<property name="hibernateTemplate" ref="hibernateTemplate" />
+	</bean>
+	<!-- 在Service中使用DAO -->
+	<bean id="userService" class="service.UserService" scope="prototype">
+		<property name="userDao" ref="userDAO"></property>
+	</bean>
+	<bean id="anticipateService" class="service.AnticipateService" scope="prototype">
+	</bean>
+	
+	
+	<!-- 在Action中使用Service -->
+	<bean id="userLoginAction" class="action.LoginAction" scope="prototype">
+		<property name="userService" ref="userService"></property>
+	</bean>
+	<bean id="userRegisterAction" class="action.RegisterAction" scope="prototype">
+		<property name="userService" ref="userService"></property>
+	</bean>
+    <bean id="securityCodeAction" class="action.SecurityCodeImageAction" scope="prototype">
+	</bean>
+	<bean id="anticipateAction" class="action.AnticipateAction" scope="prototype">
+		<property name="antiService" ref="anticipateService"></property>
+	</bean>
+	<bean id="customAction" class="action.CustomAction" scope="prototype">
+	</bean>
+	<bean id="backMainPageAction" class="action.BackMainPageAction" scope="prototype">
+	</bean>
+	
+	<bean id="transactionManager"
+		class="org.springframework.orm.hibernate5.HibernateTransactionManager">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+	
+	<tx:annotation-driven transaction-manager="transactionManager" proxy-target-class="true"/>
+	
+	    <!-- 事务 -->
+    <tx:advice id="txAdvice" transaction-manager="transactionManager">
+        <tx:attributes>
+            <tx:method name="query*" read-only="true" propagation="REQUIRED" />
+            <tx:method name="find*" read-only="true" propagation="REQUIRED" />
+            <tx:method name="*" propagation="REQUIRED" />
+        </tx:attributes>
+    </tx:advice>
+
+    <!-- 配置AOP -->
+    <aop:config proxy-target-class="true">
+        <aop:pointcut expression="execution(* service.*.*(..))" id="serviceMethod" />
+        <aop:advisor advice-ref="txAdvice" pointcut-ref="serviceMethod" />
+    </aop:config>
+
+
+</beans>

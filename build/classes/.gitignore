@@ -1,0 +1,13 @@
+/action/
+/applicationContext.xml
+/dao/
+/entity/
+/iris-test.txt
+/iris-train.txt
+/jdbc.properties
+/log4j.properties
+/netParams.txt
+/service/
+/struts.xml
+/tool/
+/weight.txt
