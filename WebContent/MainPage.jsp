@@ -37,7 +37,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
           <div class="container">
               <div class="navbar-header">
                   <a class="navbar-brand">
-                      BP算法应用：鸢尾花种类判断
+                      BP算法应用：鸢尾花种类判断Branch1
                   </a>
               </div>
               <div class="col-xs-3">
